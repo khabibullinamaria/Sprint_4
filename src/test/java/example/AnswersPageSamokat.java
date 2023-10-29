@@ -4,16 +4,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.junit.Test;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
+import pageobjects.BaseTest;
 import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
-public class AnswersPageSamokat {
+public class AnswersPageSamokat extends BaseTest {
     private final String questionId;
     private final String answerId;
     private final String answerText;
@@ -26,7 +22,6 @@ public class AnswersPageSamokat {
 
     @Parameterized.Parameters
     public static Object[][] getAnswers() {
-        //Сгенерируй тестовые данные (свою учётку и несколько случайных)
         return new Object[][] {
                 {"accordion__heading-0", "accordion__panel-0", "Сутки — 400 рублей. Оплата курьеру — наличными или картой."},
                 {"accordion__heading-1", "accordion__panel-1", "Пока что у нас так: один заказ — один самокат. Если хотите покататься с друзьями, можете просто сделать несколько заказов — один за другим."},
@@ -42,24 +37,11 @@ public class AnswersPageSamokat {
 
     @Test
     public void checkTextInAnswers() throws InterruptedException {
-        // создали драйвер для браузера Chrome
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--no-sandbox", "--headless", "--disable-dev-shm-usage");
-        var driver = new ChromeDriver(options);
-        // перешли на страницу тестового приложения
-        driver.get("https://qa-scooter.praktikum-services.ru/");
-
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("window.scrollBy(0,document.body.scrollHeight)", "");
         js.executeScript("window.scrollBy(0,document.body.scrollHeight)", "");
-        new WebDriverWait(driver, 3)
-                .until(ExpectedConditions.visibilityOfElementLocated(By.id(questionId)));
         driver.findElement(By.id(questionId)).click();
-        new WebDriverWait(driver, 3)
-                .until(ExpectedConditions.visibilityOfElementLocated(By.id(answerId)));
         var actualAnswerText = driver.findElement(By.id(answerId)).getText();
-
         assertEquals(answerText, actualAnswerText);
-        driver.quit();
     }
 }
